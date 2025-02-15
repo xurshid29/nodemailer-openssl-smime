@@ -1,13 +1,13 @@
-ARG BUILD_PYTHON_VERSION=3.11
+ARG BUILD_PYTHON_VERSION=3.13
 ARG BUILD_NODE_VERSION=18
-ARG RUN_NODE_VERSION=14
+ARG RUN_NODE_VERSION=18
 
 ###################################################################################################
-FROM nikolaik/python-nodejs:python${BUILD_PYTHON_VERSION}-nodejs${BUILD_NODE_VERSION}-alpine AS buildstage
+FROM nikolaik/python-nodejs:python${BUILD_PYTHON_VERSION}-nodejs${BUILD_NODE_VERSION} AS buildstage
 
-RUN apk add --update-cache \
-  build-base \
-  && rm -rf /var/cache/apk/*
+RUN apt-get update && \
+    apt-get install -y build-essential && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app/
 COPY . .
@@ -15,4 +15,4 @@ COPY . .
 RUN npm ci
 RUN npm run build
 
-CMD ["cp", "-rfv", "/usr/src/app/prebuilds/linux-x64/", "/mnt/prebuilds/"]
+CMD ["cp", "-rfv", "/usr/src/app/prebuilds/linux-arm64/", "/mnt/prebuilds/"]
